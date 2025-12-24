@@ -108,6 +108,22 @@ No API keys are hardcoded.
 
 ---
 
+Live Deployment (AWS EC2)
+
+The backend system is deployed on AWS EC2 and is publicly accessible.
+Health Check Endpoint:   http://13.51.56.51:8000/health
+
+Sample response:
+{
+  "status": "ok",
+  "database": "connected"
+}
+
+This endpoint confirms:
+The API service is running
+The PostgreSQL database is reachable
+The system has started successfully in a cloud environment
+
 ## ⚙️ Environment Configuration
 
 All configuration is handled through environment variables to ensure security and portability:
@@ -121,27 +137,4 @@ DB_PASSWORD=avinash79
 
 
 
-Live Deployment (AWS EC2)
 
-The backend system is deployed on AWS EC2 and is publicly accessible.
-
-Health Check Endpoint:
-
-http://13.51.56.51:8000/health
-
-
-Sample response:
-
-{
-  "status": "ok",
-  "database": "connected"
-}
-
-
-This endpoint confirms:
-
-The API service is running
-
-The PostgreSQL database is reachable
-
-The system has started successfully in a cloud environment
