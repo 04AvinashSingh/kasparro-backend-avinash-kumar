@@ -34,20 +34,20 @@ https://drive.google.com/file/d/1KYZ9XLV6ByF7fBcCgHfHmhUsG7yW1all/view
 
 ##  System Architecture
 
-AWS EC2 (Ubuntu)
-│
-├── FastAPI Backend (Docker)
-│ ├── API layer (health & data endpoints)
-│ ├── Startup logic with recovery handling
-│ └── ETL-related initialization
-│
-├── PostgreSQL Database (Docker)
-│ └── Normalized asset data storage
-│
-└── Docker Compose
-├── Service orchestration
-├── Health checks
-└── Environment-based configuration
+## 🧠 System Architecture
+
+- **AWS EC2 (Ubuntu)**
+  - **FastAPI Backend (Docker)**
+    - API layer (health & data endpoints)
+    - Startup logic with recovery handling
+    - ETL-related initialization
+  - **PostgreSQL Database (Docker)**
+    - Normalized asset data storage
+  - **Docker Compose**
+    - Service orchestration
+    - Health checks
+    - Environment-based configuration
+
 
 
 
@@ -62,20 +62,20 @@ AWS EC2 (Ubuntu)
 ##  Folder Structure
 
 The project is organized with **clear separation of concerns**:
-
 ├── api/
-│ └── main.py # FastAPI application & API routes
+│   └── main.py            # FastAPI application & API routes
 │
 ├── ingestion/
-│ └── (ETL-related logic)
+│   └── (ETL-related logic)
 │
 ├── tests/
-│ └── (unit & integration tests)
+│   └── (unit & integration tests)
 │
 ├── Dockerfile
 ├── docker-compose.yml
 ├── requirements.txt
 └── README.md
+
 
 
 This structure makes it easy to:
