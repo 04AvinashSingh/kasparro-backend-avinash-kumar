@@ -61,21 +61,52 @@ https://drive.google.com/file/d/1KYZ9XLV6ByF7fBcCgHfHmhUsG7yW1all/view
 
 ##  Folder Structure
 
-The project is organized with **clear separation of concerns**:
-├── api/
-│   └── main.py            # FastAPI application & API routes
-│
-├── ingestion/
-│   └── (ETL-related logic)
-│
-├── tests/
-│   └── (unit & integration tests)
-│
-├── Dockerfile
-├── docker-compose.yml
-├── requirements.txt
-└── README.md
+Root Directory
 
+api/
+FastAPI application entry point and API route definitions
+
+core/
+Core application logic, shared utilities, and configuration helpers
+
+data/
+Local data files used for ingestion, testing, or development reference
+
+db/
+Database-related logic such as connection handling, migrations, or helpers
+
+ingestion/
+ETL pipelines and data ingestion workflows from external sources
+
+schemas/
+Data models and schemas used for validation and serialization
+
+tests/
+Unit and integration tests for backend and ETL components
+
+.pytest_cache/
+Pytest cache directory (auto-generated during test runs)
+
+.env
+Environment variables for local and containerized execution
+
+Dockerfile
+Docker image definition for the FastAPI backend
+
+docker-compose.yml
+Service orchestration, health checks, and environment-based configuration
+
+Makefile
+Helper commands for running, testing, and managing the project
+
+pytest.ini
+Pytest configuration for test discovery and execution
+
+requirements.txt
+Python dependencies required by the project
+
+README.md
+Project documentation, architecture overview, and deployment details
 
 
 This structure makes it easy to:
