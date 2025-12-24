@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: kasparro_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: avinash79
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+
+  api:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
