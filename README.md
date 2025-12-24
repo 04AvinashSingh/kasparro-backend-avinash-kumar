@@ -37,17 +37,17 @@ https://drive.google.com/file/d/1KYZ9XLV6ByF7fBcCgHfHmhUsG7yW1all/view
 AWS EC2 (Ubuntu)
 │
 ├── FastAPI Backend (Docker)
-│   ├── API layer (health & data endpoints)
-│   ├── Startup logic with recovery handling
-│   └── ETL-related initialization
+│ ├── API layer (health & data endpoints)
+│ ├── Startup logic with recovery handling
+│ └── ETL-related initialization
 │
 ├── PostgreSQL Database (Docker)
-│   └── Normalized asset data storage
+│ └── Normalized asset data storage
 │
 └── Docker Compose
-    ├── Service orchestration
-    ├── Health checks
-    └── Environment-based configuration
+├── Service orchestration
+├── Health checks
+└── Environment-based configuration
 
 
 
