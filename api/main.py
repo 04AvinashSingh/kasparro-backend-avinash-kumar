@@ -15,9 +15,9 @@ from core.rate_limiter import is_rate_limited
 
 app = FastAPI()
 
-# ------------------------
+
 # Database helper
-# ------------------------
+
 import time
 import psycopg2
 from psycopg2 import OperationalError
@@ -67,9 +67,9 @@ def get_db_connection(retries=5, delay=2):
     raise Exception("Database is not available after retries")
 
 
-# ------------------------
+
 # Startup: create table
-# ------------------------
+
 @app.on_event("startup")
 def start_background_etl():
     create_assets_table()
@@ -98,9 +98,9 @@ def create_assets_table():
     cur.close()
     conn.close()
 
-# ------------------------
+
 # Health check
-# ------------------------
+
 @app.get("/health")
 def health():
     try:
@@ -117,9 +117,9 @@ def health():
             "error": str(e)
         }
 
-# ------------------------
+
 # Data API
-# ------------------------
+
 @app.get("/stats", dependencies=[Depends(rate_limit)])
 def get_stats():
     conn = get_db_connection()

@@ -1,6 +1,5 @@
 def test_failure_status_written():
-    # We only verify table exists & can store failures
-    # Simulated failure is acceptable for assignment
+    
 
     import psycopg2
 

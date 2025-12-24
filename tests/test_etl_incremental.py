@@ -14,7 +14,7 @@ def test_incremental_checkpoint():
     )
     row = cursor.fetchone()
 
-    # Valid behavior: checkpoint exists only after ETL runs
+    
     if row is not None:
         assert row[0] is not None
 

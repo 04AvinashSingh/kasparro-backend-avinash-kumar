@@ -14,9 +14,9 @@ conn = psycopg2.connect(
 )
 cursor = conn.cursor()
 
-# -------------------------
+
 # Start ETL run
-# -------------------------
+
 run_id = str(uuid.uuid4())
 start_time = datetime.utcnow()
 
