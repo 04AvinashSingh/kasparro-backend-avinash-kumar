@@ -1,11 +1,12 @@
 import psycopg2
+import os
 
 def test_incremental_checkpoint():
     conn = psycopg2.connect(
-        host="db",
-        database="kasparro_db",
-        user="postgres",
-        password="avinash79"
+        host=os.getenv("POSTGRES_HOST", "db"),
+        database=os.getenv("POSTGRES_DB", "kasparro_db"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD"),
     )
     cursor = conn.cursor()
 
@@ -14,7 +15,7 @@ def test_incremental_checkpoint():
     )
     row = cursor.fetchone()
 
-    
+    # If a checkpoint exists, it must have a key
     if row is not None:
         assert row[0] is not None
 

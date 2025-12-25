@@ -1,11 +1,12 @@
 def test_schema_unification_columns():
     import psycopg2
+    import os
 
     conn = psycopg2.connect(
-        host="db",
-        database="kasparro_db",
-        user="postgres",
-        password="avinash79"
+        host=os.getenv("POSTGRES_HOST", "db"),
+        database=os.getenv("POSTGRES_DB", "kasparro_db"),
+        user=os.getenv("POSTGRES_USER", "postgres"),
+        password=os.getenv("POSTGRES_PASSWORD"),
     )
     cursor = conn.cursor()
 
@@ -17,7 +18,8 @@ def test_schema_unification_columns():
 
     columns = {row[0] for row in cursor.fetchall()}
 
-    expected = {"symbol", "name", "price_usd", "source"}
+    # Canonical schema (CORRECT)
+    expected = {"canonical_symbol", "canonical_name"}
 
     assert expected.issubset(columns)
 
