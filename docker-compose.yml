@@ -1,15 +1,15 @@
 services:
   db:
     image: postgres:14
-    environment:
-      POSTGRES_DB: kasparro_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: avinash79
-    ports:
-      - "5432:5432"
+    env_file:
+      - .env
     volumes:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build: .
@@ -18,5 +18,5 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-
+      db:
+        condition: service_healthy

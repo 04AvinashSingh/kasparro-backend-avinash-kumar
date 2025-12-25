@@ -2,38 +2,70 @@ import csv
 import uuid
 import psycopg2
 import json
+import os
+import time
 from datetime import datetime
 
 print("CSV WEIRD ETL STARTED")
 
-conn = psycopg2.connect(
-    host="db",
-    database="kasparro_db",
-    user="postgres",
-    password="avinash79"
-)
+
+def get_db_connection():
+    return psycopg2.connect(
+        host=os.getenv("POSTGRES_HOST"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD"),
+        port=os.getenv("POSTGRES_PORT"),
+    )
+
+
+def get_or_create_asset(cursor, symbol, name):
+    cursor.execute(
+        "SELECT id FROM assets WHERE canonical_symbol = %s",
+        (symbol.upper(),)
+    )
+    row = cursor.fetchone()
+
+    if row:
+        return row[0]
+
+    cursor.execute(
+        """
+        INSERT INTO assets (canonical_symbol, canonical_name)
+        VALUES (%s, %s)
+        RETURNING id
+        """,
+        (symbol.upper(), name)
+    )
+    return cursor.fetchone()[0]
+
+
+conn = get_db_connection()
 cursor = conn.cursor()
 
+# -------------------------
+# Ensure checkpoint table exists
+# -------------------------
+cursor.execute("""
+    CREATE TABLE IF NOT EXISTS etl_checkpoints (
+        source TEXT PRIMARY KEY,
+        last_processed_key TEXT,
+        last_run_time TIMESTAMP,
+        status TEXT
+    );
+""")
 
-# Start ETL run
-
+# -------------------------
+# Start ETL run tracking
+# -------------------------
 run_id = str(uuid.uuid4())
-start_time = datetime.utcnow()
+start_time = time.time()
+processed = 0
 
 cursor.execute("""
-    INSERT INTO etl_runs (
-        run_id, source, status, records_processed, start_time
-    )
-    VALUES (%s, %s, %s, %s, %s)
-    RETURNING id
-""", (
-    run_id,
-    "csv_weird",
-    "running",
-    0,
-    start_time
-))
-
+    INSERT INTO etl_runs (run_id, status, records_processed, duration_ms)
+    VALUES (%s, %s, %s, %s)
+""", (run_id, "running", 0, 0))
 
 # -------------------------
 # Get last checkpoint
@@ -45,10 +77,9 @@ cursor.execute(
 row = cursor.fetchone()
 last_processed = row[0] if row else None
 
-print("Last checkpoint:", last_processed)
-
-processed = 0
 resume = last_processed is None
+
+print("Last checkpoint:", last_processed)
 
 # -------------------------
 # CSV Processing
@@ -57,41 +88,42 @@ with open("/app/data/assets_weird.csv", newline="", encoding="utf-8") as f:
     reader = csv.DictReader(f)
 
     for row in reader:
-        symbol = row["coin_symbol"].strip().lower()
+        symbol = row["coin_symbol"].strip()
+        name = row["coin_name"].strip()
+        price = float(row["usd_price"])
 
-        # Resume logic (safe)
         if not resume:
             if symbol == last_processed:
                 resume = True
-            print("Skipping already processed:", symbol)
             continue
 
-        print("Processing:", symbol)
-
-        # RAW insert
+        # RAW ingestion
         cursor.execute(
             "INSERT INTO raw_csv_assets (data) VALUES (%s)",
             (json.dumps(row),)
         )
 
-        # Idempotent insert
+        # Normalized ingestion
+        asset_id = get_or_create_asset(cursor, symbol, name)
+
         cursor.execute(
             """
-            INSERT INTO assets (symbol, name, price_usd, source)
-            VALUES (%s, %s, %s, %s)
-            ON CONFLICT (symbol, source) DO NOTHING
+            INSERT INTO asset_sources
+            (asset_id, source, source_symbol, price_usd, raw)
+            VALUES (%s, %s, %s, %s, %s)
             """,
             (
+                asset_id,
+                "csv_weird",
                 symbol,
-                row["coin_name"].strip(),
-                float(row["usd_price"]),
-                "csv_weird"
+                price,
+                json.dumps(row)
             )
         )
 
         processed += 1
 
-        # Update checkpoint AFTER success
+        # Update checkpoint
         cursor.execute(
             """
             INSERT INTO etl_checkpoints (source, last_processed_key, last_run_time, status)
@@ -108,21 +140,15 @@ with open("/app/data/assets_weird.csv", newline="", encoding="utf-8") as f:
 # -------------------------
 # Finish ETL run
 # -------------------------
-# -------------------------
-# Finish ETL run
-# -------------------------
-end_time = datetime.utcnow()
-duration_ms = int((end_time - start_time).total_seconds() * 1000)
+duration_ms = int((time.time() - start_time) * 1000)
 
 cursor.execute("""
     UPDATE etl_runs
-    SET end_time = %s,
-        status = %s,
+    SET status = %s,
         records_processed = %s,
         duration_ms = %s
     WHERE run_id = %s
 """, (
-    end_time,
     "success",
     processed,
     duration_ms,

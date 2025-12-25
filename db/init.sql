@@ -1,35 +1,29 @@
-CREATE TABLE IF NOT EXISTS assets (
+DROP TABLE IF EXISTS asset_sources;
+DROP TABLE IF EXISTS assets;
+DROP TABLE IF EXISTS etl_runs;
+
+CREATE TABLE assets (
     id SERIAL PRIMARY KEY,
-    symbol TEXT NOT NULL,
-    name TEXT NOT NULL,
-    price_usd NUMERIC NOT NULL,
-    source TEXT NOT NULL,
-    UNIQUE(symbol, source)
+    canonical_symbol TEXT UNIQUE NOT NULL,
+    canonical_name TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS raw_csv_assets (
+CREATE TABLE asset_sources (
     id SERIAL PRIMARY KEY,
-    data JSONB NOT NULL,
+    asset_id INTEGER REFERENCES assets(id),
+    source TEXT NOT NULL,
+    source_symbol TEXT NOT NULL,
+    price_usd NUMERIC NOT NULL,
+    raw JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
 CREATE TABLE etl_runs (
     id SERIAL PRIMARY KEY,
-    run_id UUID DEFAULT gen_random_uuid(),
-    source TEXT,
-    status TEXT,
-    records_processed INTEGER,
-    start_time TIMESTAMP,
-    end_time TIMESTAMP,
-    duration_ms INTEGER
-);
-
-
-CREATE TABLE IF NOT EXISTS etl_checkpoints (
-    source TEXT PRIMARY KEY,
-    last_processed_key TEXT,
-    last_run_time TIMESTAMP,
-    status TEXT
+    run_id UUID NOT NULL,
+    status TEXT NOT NULL,
+    records_processed INT NOT NULL,
+    duration_ms INT NOT NULL,
+    error_message TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
