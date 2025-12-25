@@ -66,57 +66,43 @@ The structure is designed to keep concerns separated and support long-term maint
 
 ---
 
-## 🗂️ Directory Layout
+## Project structure
 
-
-kasparro-backend-avinash-kumar/
-├── api/
-│   └── main.py
-│       └── FastAPI application entry point and API routes
-│
-├── core/
-│   └── Shared utilities, configuration helpers, and core logic
-│
-├── data/
-│   └── Local data files used for ingestion, testing, or reference
-│
-├── db/
-│   └── Database connection logic, helpers, and database-related utilities
-│
-├── ingestion/
-│   └── ETL pipelines and data ingestion workflows
-│
-├── schemas/
-│   └── Data models and schemas for validation and serialization
-│
-├── tests/
-│   └── Unit and integration tests
-│
-├── .pytest_cache/
-│   └── Pytest cache (auto-generated)
-│
-├── .env
-│   └── Environment variables for local and containerized execution
-│
-├── Dockerfile
-│   └── Docker image definition for the FastAPI service
-│
-├── docker-compose.yml
-│   └── Service orchestration, health checks, and environment configuration
-│
-├── Makefile
-│   └── Helper commands for development and testing
-│
-├── pytest.ini
-│   └── Pytest configuration
-│
-├── requirements.txt
-│   └── Python dependencies
-│
-└── README.md
-    └── Project documentation and deployment details
-
-
+```
+docker-compose.yml
+Dockerfile
+Makefile
+pytest.ini
+README.md
+requirements.txt
+api/
+	__init__.py
+	main.py
+	__pycache__/
+core/
+	cache.py
+	rate_limiter.py
+	__pycache__/
+data/
+	assets_weird.csv
+	assets.csv
+db/
+	init.sql
+ingestion/
+	coingecko.py
+	csv_loader.py
+	csv_weird_loader.py
+	etl_runner.py
+	__pycache__/
+schemas/
+tests/
+	test_api_stats.py
+	test_etl_failure.py
+	test_etl_incremental.py
+	test_idempotency.py
+	test_schema_mismatch.py
+	__pycache__/
+```
 
 This structure makes it easy to:
 - Extend ETL logic
