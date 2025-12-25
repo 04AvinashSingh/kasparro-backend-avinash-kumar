@@ -158,7 +158,7 @@ All configuration is handled through environment variables to ensure security an
 ```env
 DB_HOST=db
 DB_PORT=5432
-DB_NAME=kasparro
+DB_NAME=kasparro_db
 DB_USER=postgres
 DB_PASSWORD=avinash79
 
